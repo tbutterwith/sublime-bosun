@@ -1,0 +1,77 @@
+%YAML 1.2
+---
+# See http://www.sublimetext.com/docs/3/syntax.html
+name: Bosun
+file_extensions:
+  - conf
+scope: source.bosun
+contexts:
+  main:
+    # Strings begin and end with quotes, and use backslashes as an escape
+    # character
+    - match: '"'
+      scope: punctuation.definition.string.begin.bosun
+      push: double_quoted_string
+
+    # Comments begin with a '//' and finish at the end of the line
+    - match: '#'
+      scope: punctuation.definition.comment.bosun
+      push: line_comment
+
+    # Keywords are if, else for and while.
+    # Note that blackslashes don't need to be escaped within single quoted
+    # strings in YAML. When using single quoted strings, only single quotes
+    # need to be escaped: this is done by using two single quotes next to each
+    # other.
+    - match: '\b(if|else|for|while)\b'
+      scope: keyword.control.bosun
+
+    # Keyword template names
+    - match: '\b(alert|template|macro|notification)\s'
+      scope: storage.type.bosun
+
+    # Keyword actions or imports
+    - match: '(^|\s)[a-zA-Z0-9-_]+\s?(?=\=)'
+      scope: keyword.control.import.bosun
+
+    # Variables starting with $
+    - match: '\$[a-zA-Z0-9-_]+\s?(?=\=)'
+      scope: variable.other.readwrite.bosun
+
+    # Function calls
+    - match: '\b[a-zA-Z0-9-_]+\s?(?=\()'
+      scope: entity.name.function.bosun
+
+    # Numbers
+    - match: '\b(-)?[0-9]+(\.[0-9])?\b'
+      scope: constant.numeric.bosun
+
+    # Evaluated commands
+    - match: '\{\{[^\}]+\}\}'
+      scope: constant.other.placeholder.bosun
+
+    #
+
+    - match: \{
+      push: brackets
+    - match: \}
+      scope: invalid.illegal.stray-bracket-end
+
+  brackets:
+    - match: \}
+      pop: true
+    - include: main
+
+  double_quoted_string:
+    - meta_scope: string.quoted.double.bosun
+    - match: '\\.'
+      scope: constant.character.escape.bosun
+    - match: '"'
+      scope: punctuation.definition.string.end.ebosun
+      pop: true
+
+  line_comment:
+    - meta_scope: comment.line.bosun
+    - match: $
+      pop: true
+
